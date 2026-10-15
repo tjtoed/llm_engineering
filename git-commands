@@ -1,0 +1,17 @@
+After doing a lab or making changes myself:
+
+git status                      # see what changed
+git add week4/day3.ipynb        # stage specific files (avoid `git add .`)
+git commit -m "week4 day3: litellm + openrouter"
+git push                        # sends it to your fork on GitHub
+
+
+Before starting new material: Pull from Eds updates
+
+git status                      # should say "nothing to commit"
+git fetch upstream              # download Ed's changes, doesn't touch your files
+git merge upstream/main         # combine them with yours
+git push                        # update your fork
+
+uv sync
+
