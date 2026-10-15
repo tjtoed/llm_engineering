@@ -1,17 +1,84 @@
-After doing a lab or making changes myself:
+GIT CHEAT SHEET - llm_engineering
+==================================
 
-git status                      # see what changed
-git add week4/day3.ipynb        # stage specific files (avoid `git add .`)
-git commit -m "week4 day3: litellm + openrouter"
-git push                        # sends it to your fork on GitHub
+Remotes
+  origin    = my fork        (tjtoed/llm_engineering)
+  upstream  = Ed's repo      (ed-donner/llm_engineering)
 
 
-Before starting new material: Pull from Eds updates
+1. BEFORE EDITING A LAB: make my own copy
+-----------------------------------------
+Never edit Ed's original notebook. Copy it first so his files merge cleanly later.
+Keep the copy in the SAME folder (the notebooks use relative paths like ../assets).
 
-git status                      # should say "nothing to commit"
-git fetch upstream              # download Ed's changes, doesn't touch your files
-git merge upstream/main         # combine them with yours
-git push                        # update your fork
+  cp week4/day3.ipynb week4/day3_mine.ipynb
 
-uv sync
+Already edited the original by accident? Copy it, then reset the original:
 
+  cp week4/day3.ipynb week4/day3_mine.ipynb      # keep my changes
+  git restore week4/day3.ipynb                   # put Ed's original back
+                                                 # (discards uncommitted edits - copy FIRST)
+
+
+2. AFTER A LAB: save my work
+----------------------------
+  git status                                     # see what changed
+  git add week4/day3_mine.ipynb                  # stage specific files (avoid `git add .`)
+  git commit -m "week4 day3: litellm + openrouter"
+  git push                                       # send it to my fork on GitHub
+
+Notebook tips:
+  - Outputs are saved in the file. They can contain system info and the first
+    characters of API keys. Use "Clear All Outputs" in VS Code first if unsure.
+  - Stage by name so stray files stay out of commits.
+  - week4/main.cpp and week4/main are already in .gitignore, so they won't show up.
+
+
+3. BEFORE NEW MATERIAL: pull Ed's updates
+-----------------------------------------
+Commit my own work first so I start from a clean tree.
+
+  git status                                     # should say "nothing to commit"
+  git fetch upstream                             # download Ed's changes (touches nothing)
+  git merge upstream/main                        # combine them with mine
+  git push                                       # update my fork
+  uv sync                                        # in case dependencies changed
+
+Want to see what Ed changed before merging?
+
+  git log HEAD..upstream/main --oneline          # his new commits
+  git diff HEAD...upstream/main --stat           # files he changed
+
+
+4. IF A MERGE GOES WRONG
+------------------------
+Conflict = we both changed the same file. Nothing is lost.
+
+  git status                                     # lists "both modified" files
+  git merge --abort                              # back out completely, as if I never merged
+
+To resolve instead: open the file, pick which side to keep (VS Code shows
+"Accept Current / Incoming / Both"), then:
+
+  git add <file>
+  git commit                                     # finishes the merge
+
+
+5. HANDY EVERYDAY COMMANDS
+--------------------------
+  git status                                     # what's changed right now
+  git diff                                       # exact changes not yet staged
+  git log --oneline -10                          # recent commits
+  git restore <file>                             # throw away uncommitted edits to a file
+  git restore --staged <file>                    # un-stage a file (keeps my edits)
+  git commit --amend -m "better message"         # fix the LAST commit message (before pushing)
+  git stash                                      # park uncommitted changes temporarily
+  git stash pop                                  # bring them back
+
+
+6. API KEYS
+-----------
+Keys live in .env, which is git-ignored. Never paste keys into a notebook or commit them.
+Check before committing:
+
+  git diff --cached | grep -i "sk-"              # staged changes: anything key-like?
